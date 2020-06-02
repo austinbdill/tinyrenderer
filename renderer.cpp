@@ -1,6 +1,28 @@
 #include "renderer.h"
 #include "tgaimage.h"
 #include "linalg.h"
+#include "mesh.h"
+
+TGAImage render_wireframe(const char *filename, TGAColor color, const int width, const int height) {
+    Mesh *model = NULL;
+
+    model = new Mesh(filename);
+
+    TGAImage image(width, height, TGAImage::RGB);
+    for (int i=0; i<model->nfaces(); i++) {
+        std::vector<int> face = model->face(i);
+        for (int j=0; j<3; j++) {
+            Vec3f v0 = model->vert(face[j]);
+            Vec3f v1 = model->vert(face[(j+1)%3]);
+            int x0 = (v0[0]+1.)*width/2.;
+            int y0 = (v0[1]+1.)*height/2.;
+            int x1 = (v1[0]+1.)*width/2.;
+            int y1 = (v1[1]+1.)*height/2.;
+            line(x0, y0, x1, y1, image, color);
+        }
+    }
+    return image;
+}
 
 Vec3f barycentric_coordinates(Vec2i a, Vec2i b, Vec2i c, Vec2i p) {
     //std::cout << "a: " << a << std::endl;
