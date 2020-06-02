@@ -3,6 +3,24 @@
 #include "linalg.h"
 #include "mesh.h"
 
+TGAImage render_mesh(const char *filename, TGAColor color, const int width, const int height) {
+    Mesh *model = NULL;
+
+    model = new Mesh(filename);
+
+    TGAImage image(width, height, TGAImage::RGB);
+    for (int i=0; i<model->nfaces(); i++) { 
+        std::vector<int> face = model->face(i); 
+        Vec2i screen_coords[3]; 
+        for (int j=0; j<3; j++) { 
+            Vec3f world_coords = model->vert(face[j]); 
+            screen_coords[j] = Vec2i((world_coords[0]+1.)*width/2., (world_coords[1]+1.)*height/2.); 
+        } 
+        triangle(screen_coords, image, TGAColor(rand()%255, rand()%255, rand()%255, 255)); 
+}
+    return image;
+}
+
 TGAImage render_wireframe(const char *filename, TGAColor color, const int width, const int height) {
     Mesh *model = NULL;
 
@@ -25,25 +43,14 @@ TGAImage render_wireframe(const char *filename, TGAColor color, const int width,
 }
 
 Vec3f barycentric_coordinates(Vec2i a, Vec2i b, Vec2i c, Vec2i p) {
-    //std::cout << "a: " << a << std::endl;
-    //std::cout << "b: " << b << std::endl;
-    //std::cout << "c: " << c << std::endl;
-    //std::cout << "p: " << p << std::endl;
 
     Vec2i ab(b[0]-a[0], b[1]-a[1]);
-    //std::cout << "AB: " << ab << std::endl;
     Vec2i ac(c[0]-a[0], c[1]-a[1]);
-    //std::cout << "AC: " << ac << std::endl;
     Vec2i pa(a[0]-p[0], a[1]-p[1]);
-    //std::cout << "PA: " << pa << std::endl;
     Vec3i vec1(ac[0], ab[0], pa[0]);
-    //std::cout << "vec1: " << vec1 << std::endl;
     Vec3i vec2(ac[1], ab[1], pa[1]);
-    //std::cout << "vec2: " << vec2 << std::endl;
     Vec3f cross_product = cross(vec1, vec2);
-    //std::cout << "cross: " << cross_product << std::endl;
     Vec3f result(1.f-(cross_product[0]+cross_product[1])/cross_product[2], cross_product[1]/cross_product[2], cross_product[0]/cross_product[2]);
-    std::cout << "result: " << result << std::endl;
     return result;
 }
 

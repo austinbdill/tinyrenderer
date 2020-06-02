@@ -11,4 +11,6 @@ void triangle(Vec2i *pts, TGAImage &image, TGAColor color);
 
 TGAImage render_wireframe(const char *filename, TGAColor color, const int width, const int height);
 
+TGAImage render_mesh(const char *filename, TGAColor color, const int width, const int height);
+
 #endif

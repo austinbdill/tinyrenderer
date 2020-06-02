@@ -7,7 +7,7 @@ int main(int argc, char** argv) {
 
     const TGAColor white = TGAColor(255, 255, 255, 255);
     const TGAColor red   = TGAColor(255, 0,   0,   255);
-    TGAImage frame = render_wireframe("obj/african_head/african_head.obj", red, 800, 800);
+    TGAImage frame = render_mesh("obj/african_head/african_head.obj", red, 800, 800);
     frame.flip_vertically(); // to place the origin in the bottom left corner of the image 
     frame.write_tga_file("framebuffer.tga");
     return 0;
