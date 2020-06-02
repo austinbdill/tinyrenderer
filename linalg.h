@@ -145,15 +145,6 @@ class Matrix<T, 3, 1> {
 };
 
 // Unary Operators
-template <typename T, size_t ROWS>
-T dot(const Matrix<T, ROWS, 1> a, const Matrix<T, ROWS, 1> b) {
-    T sum = 0;
-    for (size_t i = 0; i < ROWS; i++) {
-        sum += a[i] * b[i];
-    }
-    return sum;
-}
-
 template<typename T, size_t ROWS>
 float norm(const Matrix<T, ROWS, 1> a) {
     return sqrt(dot(a, a));
@@ -170,6 +161,24 @@ Matrix<float, ROWS, 1> normalize(const Matrix<T, ROWS, 1> a) {
 }
 
 // Binary Operators
+template <typename T, size_t ROWS>
+T dot(const Matrix<T, ROWS, 1> a, const Matrix<T, ROWS, 1> b) {
+    T sum = 0;
+    for (size_t i = 0; i < ROWS; i++) {
+        sum += a[i] * b[i];
+    }
+    return sum;
+}
+
+template <typename T>
+Matrix<float, 3, 1> cross(const Matrix<T, 3, 1> a, const Matrix<T, 3, 1> b) {
+    T x = a[1]*b[2] - a[2]*b[1];
+    T y = a[2]*b[0] - a[0]*b[2];
+    T z = a[0]*b[1] - a[1]*b[0];
+    Matrix<float, 3, 1> result(x, y, z);
+    return result;
+}
+
 template <typename T, size_t ROWS, size_t COLS>
 Matrix<T, ROWS, COLS> operator+(const Matrix<T, ROWS, COLS>& a, const Matrix<T, ROWS, COLS>&b) {
     Matrix<T, ROWS, COLS> result;
