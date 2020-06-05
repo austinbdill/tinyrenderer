@@ -46,6 +46,16 @@ class Matrix {
             }
             return result;
         }
+        // Static Methods
+        static Matrix<T, ROWS, COLS> identity() {
+            Matrix<T, ROWS, COLS> result;
+            for (size_t i = 0; i < ROWS; i++) {
+                for (size_t j = 0; j < COLS; j++) {
+                    if (i == j) result(i, j) = 1;
+                }
+            }
+            return result;
+        }
 };
 
 template <typename T, size_t ROWS>
@@ -121,7 +131,7 @@ class Matrix<T, 3, 1> {
                 data_[i] = T();
             }
         }
-        Matrix(const T data_[2]) {
+        Matrix(const T data_[3]) {
             for (size_t i = 0; i < 3; i++) {
                 this->data_[i] = data_[i];
             }
@@ -146,6 +156,36 @@ class Matrix<T, 3, 1> {
 
 // Unary Operators
 template<typename T, size_t ROWS>
+Matrix<T, ROWS, 1> partial_round(const Matrix<T, ROWS, 1> a) {
+    Matrix<T, ROWS, 1> result;
+    for (size_t i = 0; i < ROWS-1; i++) {
+        result[i] = round(a[i]);
+    }
+    result[ROWS-1] = a[ROWS-1];
+    return result;
+}
+
+template<typename T, size_t ROWS>
+Matrix<T, ROWS-1, 1> project(const Matrix<T, ROWS, 1> a) {
+    Matrix<T, ROWS-1, 1> result;
+    for (size_t i = 0; i < ROWS-1; i++) {
+        result[i] = a[i];
+    }
+    return result;
+}
+
+template<typename T, size_t ROWS>
+Matrix<T, ROWS+1, 1> embed(const Matrix<T, ROWS, 1> a, const T fill) {
+    Matrix<T, ROWS+1, 1> result;
+    for (size_t i = 0; i < ROWS; i++) {
+        result[i] = a[i];
+    }
+    result[ROWS] = fill;
+    return result;
+}
+
+
+template<typename T, size_t ROWS>
 float norm(const Matrix<T, ROWS, 1> a) {
     return sqrt(dot(a, a));
 }
@@ -161,6 +201,30 @@ Matrix<float, ROWS, 1> normalize(const Matrix<T, ROWS, 1> a) {
 }
 
 // Binary Operators
+template <typename T, size_t ROWS, size_t COLS, size_t OUT>
+Matrix<T, ROWS, OUT> operator*(const Matrix<T, ROWS, COLS> a, const Matrix<T, COLS, OUT> b) {
+    Matrix<T, ROWS, OUT> result;
+    for (int i = 0; i < ROWS; i++) {
+        for (int j = 0; j < OUT; j++) {
+            for (int k = 0; k < COLS; k++) {
+                result(i, j) += a(i, k) * b(k, j);
+            }
+        }
+    }
+    return result;
+}
+
+template <typename T, size_t ROWS, size_t COLS>
+Matrix<T, ROWS, 1> operator*(const Matrix<T, ROWS, COLS> a, const Matrix<T, COLS, 1> b) {
+    Matrix<T, ROWS, 1> result;
+    for (int i = 0; i < ROWS; i++) {
+        for (int j = 0; j < COLS; j++) {
+            result[i] += a(i, j) * b[j];
+        }
+    }
+    return result;
+}
+
 template <typename T, size_t ROWS>
 T dot(const Matrix<T, ROWS, 1> a, const Matrix<T, ROWS, 1> b) {
     T sum = 0;
@@ -382,5 +446,7 @@ typedef Matrix<float, 2, 1> Vec2f;
 typedef Matrix<int, 2, 1> Vec2i;
 typedef Matrix<float, 3, 1> Vec3f;
 typedef Matrix<int, 3, 1> Vec3i;
+typedef Matrix<float, 4, 1> Vec4f;
+typedef Matrix<int, 4, 1> Vec4i;
 
 #endif //__LINALG_H__
